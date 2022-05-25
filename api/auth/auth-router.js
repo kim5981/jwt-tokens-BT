@@ -55,12 +55,12 @@ router.post("/login", checkUsernameExists, (req, res, next) => {
 
   if(bcrypt.compareSync( req.body.password, req.user.password)){
     const token = createToken(req.user)
-    res.json({
+    res.status(200).json({
       message: `${req.user.username} is back!`,
       token
     })
   } else {
-    next({ status: 401, message: "Invalid credentials"})
+    next()
   }
 });
 
@@ -73,7 +73,7 @@ function createToken(user){
     role_name: user.role_name,
   }
   const options = {
-    expiresIn: "1d"
+    expiresIn: "1d",
   }
   return jwt.sign(payload, JWT_SECRET, options)
 }
