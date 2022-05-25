@@ -42,7 +42,17 @@ function findBy(filter) {
         "role_name": "admin",
       }
     ]
+
+     select username, user_id, role_name, password
+    from users as u
+    join roles as r 
+    on u.user_id = r.role_id;
+    where users.user_id = 1 <-- 1 being input into fn
    */
+  return db("users")
+  .join("roles", "users.user_id", "=", "roles.role_id")
+  .select("users.*", "role_name")
+  .where("users.user_id", filter)
 }
 
 function findById(user_id) {
