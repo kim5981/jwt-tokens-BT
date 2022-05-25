@@ -5,6 +5,7 @@ const { checkUsernameExists, validateRoleName } = require('./auth-middleware');
 
 const { JWT_SECRET } = require("../secrets"); // use this secret!
 const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
 
 router.post("/register", validateRoleName, (req, res, next) => {
   /**
@@ -18,20 +19,17 @@ router.post("/register", validateRoleName, (req, res, next) => {
       "role_name": "angel"
     }
    */
-    let { username, password } = req.body
-    let { role_name } = req
+    const { username, password } = req.body
+    const { role_name } = req
 
     //* hash before adding
-    const hash = bcrypt.compareSync(password, 8)
-
-
+    const hash = bcrypt.hashSync(password, 8)
     Users.add({ username, password: hash, role_name })
-    .then(() => {
+    .then(newUser => {
       res.status(201).json({
-        ...req.body,
-        username: username,
-        password: password,
-        role: role_name,
+        user: newUser.user,
+        username: newUser.username,
+        role_name: newUser.role_name
       })
     })
     .catch(next)
@@ -58,6 +56,7 @@ router.post("/login", checkUsernameExists, (req, res, next) => {
       "role_name": "admin" // the role of the authenticated user
     }
    */
+  next()
 
 });
 
