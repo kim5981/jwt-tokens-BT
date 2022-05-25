@@ -30,9 +30,8 @@ function find() {
 
 function findBy(filter) {
   /**
+    !! filter needs to be an object !!   
   
-    Resolves to
-
     [
       {
         "user_id": 1,
