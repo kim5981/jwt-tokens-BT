@@ -96,18 +96,18 @@ function findById(user_id) {
     "role_name": "team lead"
   }
  */
-async function add({ username, password, role_name }) { // done for you
+async function add({ username, password, role_name }) {
   let created_user_id
-  await db.transaction(async trx => {
+  await db.transaction(async trx => { // rollback if changes occurred in one table but not the other
     let role_id_to_use
-    const [role] = await trx('roles').where('role_name', role_name)
+    const [role] = await trx('roles').where('role_name', role_name) // check if role exists
     if (role) {
       role_id_to_use = role.role_id
     } else {
-      const [role_id] = await trx('roles').insert({ role_name: role_name })
+      const [role_id] = await trx('roles').insert({ role_name: role_name }) // we can use the existing role as id for new user
       role_id_to_use = role_id
     }
-    const [user_id] = await trx('users').insert({ username, password, role_id: role_id_to_use })
+    const [user_id] = await trx('users').insert({ username, password, role_id: role_id_to_use }) // else we add a new one and use that id instead
     created_user_id = user_id
   })
   return findById(created_user_id)
